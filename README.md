@@ -31,3 +31,4 @@ Drop a `resume.pdf` file next to `index.html`, then in `renderConnect()` replace
 ```html
 <a href="resume.pdf" download>Download résumé (PDF)</a>
 ```
+
