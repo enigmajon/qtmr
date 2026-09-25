@@ -29,14 +29,8 @@
   }
 
   * { box-sizing: border-box; }
-
-  html {
-    scroll-padding-top: env(safe-area-inset-top, 0px);
-  }
-
-  html, body {
-    height: 100%;
-  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; }
 
   body {
     margin: 0;
@@ -50,10 +44,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  ::selection {
-    background: var(--accent-dim);
-    color: var(--text-bright);
-  }
+  ::selection { background: var(--accent-dim); color: var(--text-bright); }
 
   a {
     color: var(--accent);
@@ -61,10 +52,8 @@
     border-bottom: 1px solid transparent;
     transition: border-color 0.15s ease;
   }
-  a:hover, a:focus-visible {
-    border-bottom-color: var(--accent);
-  }
-  a:focus-visible, button:focus-visible {
+  a:hover, a:focus-visible { border-bottom-color: var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
@@ -73,6 +62,11 @@
     max-width: 760px;
     margin: 0 auto;
     padding: 32px 20px 80px;
+    opacity: 0;
+  }
+  .wrap.ready {
+    opacity: 1;
+    transition: opacity 0.4s ease;
   }
 
   /* ---------- Terminal window chrome ---------- */
@@ -104,16 +98,48 @@
     color: var(--text-dim);
     font-size: 12.5px;
     letter-spacing: 0.02em;
-    padding-right: 48px;
+    padding-right: 12px;
   }
 
+  .sound-toggle {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 2px 4px;
+    font-size: 13px;
+    line-height: 1;
+    border-radius: 4px;
+    transition: color 0.15s ease;
+  }
+  .sound-toggle:hover { color: var(--text-bright); }
+
   .termbody {
-    padding: 22px 22px 26px;
+    padding: 22px 22px 18px;
+    min-height: 420px;
   }
 
   @media (max-width: 520px) {
-    .termbody { padding: 18px 14px 22px; }
+    .termbody { padding: 18px 14px 16px; }
     .wrap { padding: 18px 10px 56px; }
+  }
+
+  /* ---------- Boot sequence ---------- */
+  .boot-line {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0 0 5px;
+    opacity: 0;
+    animation: bootline 0.35s ease forwards;
+  }
+  .boot-line .ok { color: var(--green); }
+  .boot-line .val { color: var(--text); }
+  @keyframes bootline {
+    from { opacity: 0; transform: translateX(-3px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .boot-line { animation: none; opacity: 1; }
   }
 
   /* ---------- Prompt lines ---------- */
@@ -129,17 +155,14 @@
   .prompt-sym { color: var(--text-dim); }
   .prompt-cmd { color: var(--text-bright); font-weight: 500; }
 
-  .output {
-    margin: 0 0 28px;
-    padding-left: 2px;
-  }
+  .output { margin: 0 0 20px; padding-left: 2px; }
 
   /* ---------- Nav (typed commands) ---------- */
   nav.cmdnav {
     display: flex;
     flex-wrap: wrap;
     gap: 6px 4px;
-    margin: 18px 0 30px;
+    margin: 18px 0 24px;
   }
   nav.cmdnav button {
     font-family: var(--font);
@@ -150,11 +173,12 @@
     padding: 7px 12px;
     border-radius: 6px;
     cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
   }
   nav.cmdnav button:hover {
     border-color: var(--accent-dim);
     color: var(--text-bright);
+    transform: translateY(-1px);
   }
   nav.cmdnav button.active {
     border-color: var(--accent);
@@ -162,6 +186,48 @@
     background: rgba(88,166,255,0.08);
   }
   nav.cmdnav button .tilde { color: var(--text-dim); }
+
+  /* ---------- Command input line ---------- */
+  .cmdline-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    margin: 0 0 26px;
+    transition: border-color 0.15s ease;
+  }
+  .cmdline-row:focus-within { border-color: var(--accent-dim); }
+  .cmdline-row .prefix { color: var(--green); font-size: 13.5px; flex-shrink: 0; }
+  .cmdline-row .chevron { color: var(--text-dim); flex-shrink: 0; }
+  .cmdline-row input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-bright);
+    font-family: var(--font);
+    font-size: 13.5px;
+    outline: none;
+    min-width: 0;
+  }
+  .cmdline-row input::placeholder { color: var(--text-dim); opacity: 0.7; }
+  .cmdline-hint {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin: -18px 0 24px;
+    padding-left: 2px;
+  }
+  .cmdline-hint kbd {
+    font-family: var(--font);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 10.5px;
+  }
+  .cmdline-error { color: var(--red); }
 
   /* ---------- Headings / labels ---------- */
   h1 {
@@ -177,13 +243,10 @@
     color: var(--text-bright);
     margin: 0 0 14px;
   }
-  .field {
-    color: var(--text-dim);
-  }
+  .field { color: var(--text-dim); }
   .field-val { color: var(--text); }
   .comment { color: var(--text-dim); font-style: italic; }
 
-  /* ---------- key: value rows ---------- */
   .kv {
     display: grid;
     grid-template-columns: 128px 1fr;
@@ -198,7 +261,6 @@
   .kv .field::before { content: "$ "; color: var(--text-dim); }
   .kv .field { color: var(--purple); }
 
-  /* ---------- status badge ---------- */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -215,13 +277,8 @@
     background: var(--amber);
     animation: pulse 1.8s ease-in-out infinite;
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pulse { animation: none; }
-  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
 
   /* ---------- timeline (log entries) ---------- */
   .log-entry {
@@ -234,28 +291,15 @@
   .log-entry::before {
     content: "";
     position: absolute;
-    left: -5px;
-    top: 4px;
-    width: 9px;
-    height: 9px;
+    left: -5px; top: 4px;
+    width: 9px; height: 9px;
     border-radius: 50%;
     background: var(--bg-panel);
     border: 2px solid var(--accent-dim);
   }
-  .log-entry.current::before {
-    border-color: var(--green);
-  }
-  .log-date {
-    color: var(--text-dim);
-    font-size: 12.5px;
-    letter-spacing: 0.02em;
-  }
-  .log-title {
-    color: var(--text-bright);
-    font-weight: 600;
-    font-size: 14.5px;
-    margin: 3px 0 5px;
-  }
+  .log-entry.current::before { border-color: var(--green); }
+  .log-date { color: var(--text-dim); font-size: 12.5px; letter-spacing: 0.02em; }
+  .log-title { color: var(--text-bright); font-weight: 600; font-size: 14.5px; margin: 3px 0 5px; }
   .log-status {
     display: inline-block;
     font-size: 11.5px;
@@ -270,14 +314,7 @@
   .log-desc { color: var(--text); font-size: 14px; margin: 0; }
 
   /* ---------- social links ---------- */
-  .sociallist {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .sociallist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .sociallist li {
     display: flex;
     align-items: center;
@@ -286,31 +323,20 @@
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: 8px;
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, transform 0.15s ease;
   }
-  .sociallist li:hover { border-color: var(--accent-dim); }
+  .sociallist li:hover { border-color: var(--accent-dim); transform: translateX(2px); }
   .sociallist li.inactive { opacity: 0.55; }
-  .social-icon {
-    width: 20px; height: 20px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--text-dim);
-  }
+  .social-icon { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-dim); }
   .social-main { flex: 1; min-width: 0; }
   .social-name { color: var(--text-bright); font-size: 14px; font-weight: 500; }
   .social-handle { color: var(--text-dim); font-size: 12.5px; display: block; margin-top: 1px; }
   .social-handle a { color: var(--text-dim); border: none; }
   .social-handle a:hover { color: var(--accent); }
-  .status-tag {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+  .status-tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
   .status-tag.live { background: rgba(63,185,80,0.14); color: var(--green); }
   .status-tag.off { background: rgba(248,81,73,0.12); color: var(--red); }
 
-  /* ---------- CV download block ---------- */
   .cv-block {
     margin-top: 24px;
     padding: 16px;
@@ -322,33 +348,49 @@
   .cv-block strong { color: var(--text); }
 
   /* ---------- principles list ---------- */
-  .principles {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .principles li {
-    display: flex;
-    gap: 12px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .principles { list-style: none; margin: 0; padding: 0; }
+  .principles li { display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
   .principles li:last-child { border-bottom: none; }
-  .principle-mark {
-    color: var(--green);
-    flex-shrink: 0;
-    padding-top: 1px;
+  .principle-mark { color: var(--green); flex-shrink: 0; padding-top: 1px; }
+  .principle-text strong { color: var(--text-bright); display: block; font-size: 14.5px; margin-bottom: 2px; }
+  .principle-text span { color: var(--text-dim); font-size: 13.5px; }
+
+  /* ---------- skills page ---------- */
+  .skill-group { margin: 0 0 22px; }
+  .skill-group:last-child { margin-bottom: 0; }
+  .skill-group-title {
+    color: var(--purple);
+    font-size: 12.5px;
+    text-transform: lowercase;
+    margin: 0 0 10px;
   }
-  .principle-text strong {
-    color: var(--text-bright);
-    display: block;
-    font-size: 14.5px;
-    margin-bottom: 2px;
-  }
-  .principle-text span {
-    color: var(--text-dim);
+  .skill-group-title::before { content: "▸ "; color: var(--text-dim); }
+  .skill-rows { display: flex; flex-direction: column; gap: 9px; }
+  .skill-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 34px;
+    align-items: center;
+    gap: 12px;
     font-size: 13.5px;
   }
+  @media (max-width: 480px) {
+    .skill-row { grid-template-columns: 96px 1fr 30px; gap: 8px; font-size: 12.5px; }
+  }
+  .skill-name { color: var(--text); }
+  .skill-bar-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    width: 0%;
+    transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .skill-pct { color: var(--text-dim); font-size: 11.5px; text-align: right; }
 
   /* ---------- footer ---------- */
   .footer {
@@ -360,43 +402,51 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px 16px;
   }
+  .footer .fright { display: flex; gap: 16px; flex-wrap: wrap; }
 
   .cursor {
     display: inline-block;
-    width: 7px;
-    height: 15px;
+    width: 7px; height: 15px;
     background: var(--accent);
     margin-left: 4px;
     vertical-align: -2px;
     animation: blink 1s step-end infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) {
-    .cursor { animation: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
 
-  .fadein {
-    animation: fadein 0.25s ease;
+  /* ---------- page transitions ---------- */
+  .page-slot { position: relative; }
+  .page-content {
+    animation: pagein 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  @keyframes fadein {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes pagein {
+    from { opacity: 0; transform: translateY(6px); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  .page-content.leaving {
+    animation: pageout 0.16s ease forwards;
+  }
+  @keyframes pageout {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-4px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .fadein { animation: none; }
+    .page-content, .page-content.leaving { animation: none; }
   }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="wrap">
   <div class="terminal">
     <div class="titlebar">
       <span class="dot red"></span>
       <span class="dot yellow"></span>
       <span class="dot green"></span>
       <span class="titlebar-label">mukhammadkodir@portfolio: ~</span>
+      <button class="sound-toggle" id="soundToggle" aria-pressed="false" title="Toggle keystroke sound">🔇</button>
     </div>
     <div class="termbody" id="termbody">
       <!-- content injected by JS -->
@@ -404,21 +454,76 @@
   </div>
   <div class="footer">
     <span>Tashkent, Uzbekistan</span>
-    <span id="clock"></span>
+    <span class="fright">
+      <span id="uptime">session 0:00</span>
+      <span id="clock"></span>
+    </span>
   </div>
 </div>
 
 <script>
-const state = { page: 'about' };
+/* ============ Config / content ============ */
+const state = { page: 'about', soundOn: false };
 
-const pages = ['about', 'education', 'connect', 'principles'];
+const pages = ['about', 'education', 'skills', 'connect', 'principles'];
 const pageMeta = {
   about:      { cmd: 'whoami', path: '~' },
   education:  { cmd: 'cat education.log', path: '~' },
+  skills:     { cmd: 'pip list --installed', path: '~' },
   connect:    { cmd: 'ls -la socials/', path: '~' },
   principles: { cmd: 'cat principles.md', path: '~' },
 };
 
+/* ============ Sound (opt-in, tiny WebAudio blip, no files) ============ */
+let audioCtx = null;
+function playKeySound() {
+  if (!state.soundOn) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'square';
+    o.frequency.value = 320 + Math.random() * 60;
+    g.gain.value = 0.02;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+    o.stop(audioCtx.currentTime + 0.05);
+  } catch (e) { /* ignore */ }
+}
+function playEnterSound() {
+  if (!state.soundOn) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 500;
+    g.gain.value = 0.03;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    o.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.08);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.09);
+    o.stop(audioCtx.currentTime + 0.09);
+  } catch (e) { /* ignore */ }
+}
+
+document.getElementById('soundToggle').addEventListener('click', () => {
+  state.soundOn = !state.soundOn;
+  const btn = document.getElementById('soundToggle');
+  btn.textContent = state.soundOn ? '🔊' : '🔇';
+  btn.setAttribute('aria-pressed', String(state.soundOn));
+  try { localStorage.setItem('cv_sound', state.soundOn ? '1' : '0'); } catch (e) {}
+});
+try {
+  if (localStorage.getItem('cv_sound') === '1') {
+    state.soundOn = true;
+    document.getElementById('soundToggle').textContent = '🔊';
+    document.getElementById('soundToggle').setAttribute('aria-pressed', 'true');
+  }
+} catch (e) {}
+
+/* ============ Render functions for each page ============ */
 function renderNav() {
   return `
     <nav class="cmdnav" role="tablist" aria-label="Site sections">
@@ -428,28 +533,34 @@ function renderNav() {
         </button>
       `).join('')}
     </nav>
+    <div class="cmdline-row">
+      <span class="prefix">$</span>
+      <span class="chevron">cd</span>
+      <input id="cmdInput" type="text" placeholder="type a page name and press enter…" autocomplete="off" spellcheck="false" aria-label="Command input — type a section name and press enter to navigate">
+    </div>
+    <p class="cmdline-hint" id="cmdHint">try typing <kbd>education</kbd>, <kbd>skills</kbd>, <kbd>connect</kbd>, <kbd>principles</kbd>, or <kbd>help</kbd></p>
   `;
 }
 
 function renderAbout() {
   return `
     <h1>Mukhammadkodir Tokhirjonov<span class="cursor"></span></h1>
-    <p class="comment">// aspiring software engineer, preparing in Tashkent</p>
+    <p class="comment">// aspiring software engineer, based in Tashkent</p>
 
     <div class="kv">
       <span class="field">major</span>
       <span class="field-val">Computer Science</span>
       <span class="field">target</span>
-      <span class="field-val">University of Glasgow <span style="color:var(--text-dim)">(QS top-80, Russell Group)</span></span>
+      <span class="field-val">University of Glasgow <span style="color:var(--text-dim)">(QS top-100, Russell Group)</span></span>
       <span class="field">status</span>
-      <span class="badge"><span class="pulse"></span> applying for EYUF scholarship —  Upcoming cycle</span>
+      <span class="badge"><span class="pulse"></span> applying for EYUF scholarship — Oct 2026 cycle</span>
     </div>
 
     <div class="output" style="margin-top:26px;">
       <p style="margin:0;">
         I started university in Industrial Management/Engineering, learned quickly it wasn't the right
         fit, and left to pursue what I actually wanted to study: Computer Science / Software Engineering.
-        I'm currently preparing for the EYUF interview and for the state scholarship to study CS
+        I'm currently preparing IELTS/SAT materials and applying for the EYUF scholarship to study CS
         at the University of Glasgow.
       </p>
     </div>
@@ -477,14 +588,71 @@ function renderEducation() {
   `;
 }
 
+function renderSkills() {
+  const groups = [
+    {
+      title: 'foundations',
+      skills: [
+        { name: 'HTML / CSS', level: 70 },
+        { name: 'Python (fundamentals)', level: 45 },
+        { name: 'Blender', level: 55 },
+        { name: 'Scratch', level: 80 },
+      ],
+    },
+    {
+      title: 'creative & media',
+      skills: [
+        { name: 'Graphic design', level: 75 },
+        { name: 'Video editing', level: 80 },
+        { name: 'Photo editing', level: 75 },
+        { name: 'AI image prompting', level: 70 },
+      ],
+    },
+    {
+      title: 'languages',
+      skills: [
+        { name: 'Uzbek', level: 100 },
+        { name: 'English', level: 75 },
+        { name: 'Uzbek ↔ English translation', level: 70 },
+      ],
+    },
+    {
+      title: 'in progress',
+      skills: [
+        { name: 'IELTS Academic prep', level: 60 },
+        { name: 'Python (post-IELTS focus)', level: 15 },
+      ],
+    },
+  ];
+
+  return `
+    <h2><span style="color:var(--text-dim);">$</span> pip list --installed</h2>
+    <p class="comment" style="margin-top:-6px;">// self-taught, still compiling</p>
+    ${groups.map(g => `
+      <div class="skill-group">
+        <p class="skill-group-title">${g.title}</p>
+        <div class="skill-rows">
+          ${g.skills.map(s => `
+            <div class="skill-row">
+              <span class="skill-name">${s.name}</span>
+              <span class="skill-bar-track"><span class="skill-bar-fill" data-level="${s.level}"></span></span>
+              <span class="skill-pct">${s.level}%</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
 function renderConnect() {
   const socials = [
     { name: 'GitHub', handle: '@enigmajon', url: 'https://github.com/enigmajon', status: 'live', icon: 'M12 .5C5.73.5.98 5.24.98 11.52c0 4.84 3.13 8.94 7.48 10.39.55.1.75-.24.75-.53 0-.26-.01-.96-.01-1.88-3.04.66-3.68-1.47-3.68-1.47-.5-1.26-1.22-1.6-1.22-1.6-.99-.68.08-.67.08-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.67 2.57 1.19 3.2.91.1-.71.38-1.19.7-1.46-2.43-.28-4.98-1.21-4.98-5.4 0-1.19.42-2.17 1.12-2.93-.11-.28-.49-1.4.11-2.91 0 0 .92-.29 3 1.12a10.4 10.4 0 0 1 5.46 0c2.08-1.41 3-1.12 3-1.12.6 1.51.22 2.63.11 2.91.7.76 1.12 1.74 1.12 2.93 0 4.2-2.56 5.12-5 5.39.39.34.74 1 .74 2.03 0 1.47-.01 2.65-.01 3.01 0 .29.2.64.76.53 4.35-1.45 7.48-5.55 7.48-10.39C23.02 5.24 18.27.5 12 .5Z' },
-      { name: 'YouTube', handle: '@mukhammadkodir_tokhirjonov', url: 'https://www.youtube.com/@mukhammadkodir_tokhirjonov', status: 'live', icon: 'M23.5 6.5s-.23-1.64-.94-2.36c-.9-.94-1.9-.95-2.36-1C17 2.8 12 2.8 12 2.8h-.01s-5 0-8.19.34c-.46.05-1.46.06-2.36 1C.74 4.86.5 6.5.5 6.5S.25 8.44.25 10.38v1.24c0 1.94.25 3.88.25 3.88s.23 1.64.94 2.36c.9.95 2.08.92 2.6 1.02C5.9 19.14 12 19.2 12 19.2s5.01-.01 8.2-.35c.46-.06 1.46-.06 2.36-1 .71-.72.94-2.36.94-2.36s.25-1.94.25-3.88v-1.24c0-1.94-.25-3.88-.25-3.88ZM9.75 14V8l6 3-6 3Z' },
-      { name: 'Telegram (personal)', handle: 't.me/enigmajon', url: 'https://t.me/enigmajon', status: 'live', icon: 'M22.05 2.94 2.4 10.72c-1.34.55-1.33 1.3-.24 1.63l5.02 1.57 1.94 5.9c.24.65.12.9.8.9.53 0 .76-.24 1.05-.53l2.5-2.45 5.2 3.85c.96.53 1.65.26 1.9-.9l3.42-16.15c.36-1.43-.55-2.07-1.94-1.6ZM8.5 14.3l9.3-8.4c.44-.38-.1-.58-.68-.2l-11.5 7.2-2.2-.7 16-5.8-1.9 15L14 17.8l-2.6-1.9-2.9 2.8v-4.4Z' },
-      { name: 'qtmr &mdash; Telegram channel', handle: 't.me/qtmr_io', url: 'https://t.me/qtmr_io', status: 'live', icon: 'M22.05 2.94 2.4 10.72c-1.34.55-1.33 1.3-.24 1.63l5.02 1.57 1.94 5.9c.24.65.12.9.8.9.53 0 .76-.24 1.05-.53l2.5-2.45 5.2 3.85c.96.53 1.65.26 1.9-.9l3.42-16.15c.36-1.43-.55-2.07-1.94-1.6ZM8.5 14.3l9.3-8.4c.44-.38-.1-.58-.68-.2l-11.5 7.2-2.2-.7 16-5.8-1.9 15L14 17.8l-2.6-1.9-2.9 2.8v-4.4Z' },
-      { name: 'Instagram', handle: 'instagram.com/mukhammadkodir_tokhirjonov', url: 'https://instagram.com/mukhammadkodir_tokhirjonov', status: 'off', icon: 'M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 1.88c-3.14 0-3.5.01-4.74.07-1.02.05-1.57.22-1.94.36-.49.19-.83.42-1.2.78-.36.37-.59.71-.78 1.2-.14.37-.31.92-.36 1.94-.06 1.24-.07 1.6-.07 4.74s.01 3.5.07 4.74c.05 1.02.22 1.57.36 1.94.19.49.42.83.78 1.2.37.36.71.59 1.2.78.37.14.92.31 1.94.36 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c1.02-.05 1.57-.22 1.94-.36.49-.19.83-.42 1.2-.78.36-.37.59-.71.78-1.2.14-.37.31-.92.36-1.94.06-1.24.07-1.6.07-4.74s-.01-3.5-.07-4.74c-.05-1.02-.22-1.57-.36-1.94-.19-.49-.42-.83-.78-1.2-.37-.36-.71-.59-1.2-.78-.37-.14-.92-.31-1.94-.36-1.24-.06-1.6-.07-4.74-.07Zm0 3.2a4.76 4.76 0 1 1 0 9.52 4.76 4.76 0 0 1 0-9.52Zm0 1.88a2.88 2.88 0 1 0 0 5.76 2.88 2.88 0 0 0 0-5.76Zm5.9-2.06a1.11 1.11 0 1 1-2.22 0 1.11 1.11 0 0 1 2.22 0Z' },
-    ];
+    { name: 'YouTube', handle: '@mukhammadkodir_tokhirjonov', url: 'https://www.youtube.com/@mukhammadkodir_tokhirjonov', status: 'live', icon: 'M23.5 6.5s-.23-1.64-.94-2.36c-.9-.94-1.9-.95-2.36-1C17 2.8 12 2.8 12 2.8h-.01s-5 0-8.19.34c-.46.05-1.46.06-2.36 1C.74 4.86.5 6.5.5 6.5S.25 8.44.25 10.38v1.24c0 1.94.25 3.88.25 3.88s.23 1.64.94 2.36c.9.95 2.08.92 2.6 1.02C5.9 19.14 12 19.2 12 19.2s5.01-.01 8.2-.35c.46-.06 1.46-.06 2.36-1 .71-.72.94-2.36.94-2.36s.25-1.94.25-3.88v-1.24c0-1.94-.25-3.88-.25-3.88ZM9.75 14V8l6 3-6 3Z' },
+    { name: 'Telegram (personal)', handle: 't.me/enigmajon', url: 'https://t.me/enigmajon', status: 'live', icon: 'M22.05 2.94 2.4 10.72c-1.34.55-1.33 1.3-.24 1.63l5.02 1.57 1.94 5.9c.24.65.12.9.8.9.53 0 .76-.24 1.05-.53l2.5-2.45 5.2 3.85c.96.53 1.65.26 1.9-.9l3.42-16.15c.36-1.43-.55-2.07-1.94-1.6ZM8.5 14.3l9.3-8.4c.44-.38-.1-.58-.68-.2l-11.5 7.2-2.2-.7 16-5.8-1.9 15L14 17.8l-2.6-1.9-2.9 2.8v-4.4Z' },
+    { name: 'qtmr &mdash; Telegram channel', handle: 't.me/qtmr_io', url: 'https://t.me/qtmr_io', status: 'live', icon: 'M22.05 2.94 2.4 10.72c-1.34.55-1.33 1.3-.24 1.63l5.02 1.57 1.94 5.9c.24.65.12.9.8.9.53 0 .76-.24 1.05-.53l2.5-2.45 5.2 3.85c.96.53 1.65.26 1.9-.9l3.42-16.15c.36-1.43-.55-2.07-1.94-1.6ZM8.5 14.3l9.3-8.4c.44-.38-.1-.58-.68-.2l-11.5 7.2-2.2-.7 16-5.8-1.9 15L14 17.8l-2.6-1.9-2.9 2.8v-4.4Z' },
+    { name: 'Instagram', handle: 'instagram.com/mukhammadkodir_tokhirjonov', url: 'https://instagram.com/mukhammadkodir_tokhirjonov', status: 'off', icon: 'M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 1.88c-3.14 0-3.5.01-4.74.07-1.02.05-1.57.22-1.94.36-.49.19-.83.42-1.2.78-.36.37-.59.71-.78 1.2-.14.37-.31.92-.36 1.94-.06 1.24-.07 1.6-.07 4.74s.01 3.5.07 4.74c.05 1.02.22 1.57.36 1.94.19.49.42.83.78 1.2.37.36.71.59 1.2.78.37.14.92.31 1.94.36 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c1.02-.05 1.57-.22 1.94-.36.49-.19.83-.42 1.2-.78.36-.37.59-.71.78-1.2.14-.37.31-.92.36-1.94.06-1.24.07-1.6.07-4.74s-.01-3.5-.07-4.74c-.05-1.02-.22-1.57-.36-1.94-.19-.49-.42-.83-.78-1.2-.37-.36-.71-.59-1.2-.78-.37-.14-.92-.31-1.94-.36-1.24-.06-1.6-.07-4.74-.07Zm0 3.2a4.76 4.76 0 1 1 0 9.52 4.76 4.76 0 0 1 0-9.52Zm0 1.88a2.88 2.88 0 1 0 0 5.76 2.88 2.88 0 0 0 0-5.76Zm5.9-2.06a1.11 1.11 0 1 1-2.22 0 1.11 1.11 0 0 1 2.22 0Z' },
+  ];
 
   return `
     <h2><span style="color:var(--text-dim);">$</span> ls -la socials/</h2>
@@ -537,17 +705,35 @@ function renderPrinciples() {
 const renderers = {
   about: renderAbout,
   education: renderEducation,
+  skills: renderSkills,
   connect: renderConnect,
   principles: renderPrinciples,
 };
 
+/* ============ Navigation + transitions ============ */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function goTo(page) {
-  state.page = page;
-  render();
-  history.replaceState(null, '', '#' + page);
+  if (!pages.includes(page) || page === state.page) return;
+  playEnterSound();
+  const el = document.getElementById('termbody');
+  const current = el.querySelector('.page-content');
+
+  const doSwap = () => {
+    state.page = page;
+    renderBody();
+    history.replaceState(null, '', '#' + page);
+  };
+
+  if (current && !reduceMotion) {
+    current.classList.add('leaving');
+    setTimeout(doSwap, 150);
+  } else {
+    doSwap();
+  }
 }
 
-function render() {
+function renderBody() {
   const meta = pageMeta[state.page];
   const el = document.getElementById('termbody');
   el.innerHTML = `
@@ -558,23 +744,120 @@ function render() {
       <span class="prompt-sym">$</span>
       <span class="prompt-cmd">${meta.cmd}</span>
     </div>
-    ${renderNav()}
-    <div class="fadein">${renderers[state.page]()}</div>
+    <div class="page-slot">
+      <div class="page-content">
+        ${renderNav()}
+        ${renderers[state.page]()}
+      </div>
+    </div>
   `;
+  animateSkillBars();
+  wireCommandInput();
 }
 
-// init from hash if present
-const initial = location.hash.replace('#', '');
-if (pages.includes(initial)) state.page = initial;
-render();
+function animateSkillBars() {
+  const bars = document.querySelectorAll('.skill-bar-fill');
+  if (!bars.length) return;
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      bars.forEach(b => { b.style.width = b.dataset.level + '%'; });
+    }, 60);
+  });
+}
 
-// live clock
-function tick() {
+function wireCommandInput() {
+  const input = document.getElementById('cmdInput');
+  const hint = document.getElementById('cmdHint');
+  if (!input) return;
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') {
+      if (e.key.length === 1) playKeySound();
+      return;
+    }
+    const raw = input.value.trim().toLowerCase();
+    const cleaned = raw.replace(/^cd\s+/, '').replace(/^~\//, '').replace(/\/$/, '');
+
+    if (!cleaned) return;
+
+    if (cleaned === 'help') {
+      hint.innerHTML = `available: ${pages.map(p => `<kbd>${p}</kbd>`).join(' ')}`;
+      input.value = '';
+      return;
+    }
+
+    const match = pages.find(p => p === cleaned || p.startsWith(cleaned));
+    if (match) {
+      input.value = '';
+      goTo(match);
+    } else {
+      hint.innerHTML = `<span class="cmdline-error">command not found: ${cleaned}</span> — try ${pages.map(p => `<kbd>${p}</kbd>`).join(' ')}`;
+      input.value = '';
+    }
+  });
+}
+
+/* ============ Boot sequence ============ */
+function runBoot() {
+  const el = document.getElementById('termbody');
+  const wrap = document.getElementById('wrap');
+  const lines = [
+    'booting portfolio-shell v1.4.0 …',
+    '<span class="ok">✓</span> loading user profile <span class="val">mukhammadkodir</span>',
+    '<span class="ok">✓</span> mounting <span class="val">~/education</span>',
+    '<span class="ok">✓</span> mounting <span class="val">~/skills</span>',
+    '<span class="ok">✓</span> mounting <span class="val">~/connect</span>',
+    '<span class="ok">✓</span> applying theme <span class="val">terminal-dark</span>',
+    'ready.',
+  ];
+
+  if (reduceMotion) {
+    wrap.classList.add('ready');
+    renderBody();
+    return;
+  }
+
+  wrap.classList.add('ready');
+  el.innerHTML = lines.map(() => '').join('');
+  let i = 0;
+  const container = document.createElement('div');
+  el.appendChild(container);
+
+  function addLine() {
+    if (i >= lines.length) {
+      setTimeout(() => {
+        renderBody();
+      }, 200);
+      return;
+    }
+    const div = document.createElement('div');
+    div.className = 'boot-line';
+    div.innerHTML = lines[i];
+    container.appendChild(div);
+    i++;
+    setTimeout(addLine, 110);
+  }
+  addLine();
+}
+
+/* ============ Session stats (footer) ============ */
+const sessionStart = Date.now();
+function tickFooter() {
   const now = new Date();
   document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB', { hour12: false });
+  const secs = Math.floor((Date.now() - sessionStart) / 1000);
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  document.getElementById('uptime').textContent = `session ${m}:${String(s).padStart(2, '0')}`;
 }
-tick();
-setInterval(tick, 1000);
+
+/* ============ Init ============ */
+const initial = location.hash.replace('#', '');
+if (pages.includes(initial)) state.page = initial;
+
+runBoot();
+tickFooter();
+setInterval(tickFooter, 1000);
 </script>
 </body>
 </html>
